@@ -1,0 +1,90 @@
+version: '3.9'
+
+services:
+  overview:
+    image: nginx:alpine
+    container_name: art-institut-overview
+    restart: unless-stopped
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+    networks:
+      - proxy_net
+
+  # Kimai (time tracking)
+  kimai-db:
+    image: mariadb:10.11
+    container_name: art-institut-kimai-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${KIMAI_DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${KIMAI_DB_NAME}
+      - MYSQL_USER=${KIMAI_DB_USER}
+      - MYSQL_PASSWORD=${KIMAI_DB_PASSWORD}
+    volumes:
+      - kimai_db_data:/var/lib/mysql
+
+  kimai:
+    image: kimai/kimai2:apache
+    container_name: art-institut-kimai
+    restart: unless-stopped
+    depends_on:
+      - kimai-db
+    environment:
+      - APP_ENV=prod
+      - TRUSTED_PROXIES=0.0.0.0/0
+      - TRUSTED_HOSTS=kimai.art-institut.de
+      - DATABASE_URL=mysql://${KIMAI_DB_USER}:${KIMAI_DB_PASSWORD}@kimai-db:3306/${KIMAI_DB_NAME}
+      # Optional: set admin seeding on first run
+      # - ADMINMAIL=admin@art-institut.de
+      # - ADMINPASS=change-me
+      # Running behind reverse-proxy at subpath; Kimai works with subdir when proxy forwards the prefix.
+    volumes:
+      - kimai_public:/opt/kimai/public
+      - kimai_var:/opt/kimai/var
+    networks:
+      - proxy_net
+
+  # Nextcloud (files)
+  nextcloud-db:
+    image: mariadb:10.11
+    container_name: art-institut-nextcloud-db
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+      - MYSQL_ROOT_PASSWORD=${NEXTCLOUD_DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
+      - MYSQL_USER=${NEXTCLOUD_DB_USER}
+      - MYSQL_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
+    volumes:
+      - nextcloud_db_data:/var/lib/mysql
+
+  nextcloud:
+    image: nextcloud:apache
+    container_name: art-institut-nextcloud
+    restart: unless-stopped
+    depends_on:
+      - nextcloud-db
+    environment:
+      - MYSQL_HOST=nextcloud-db
+      - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
+      - MYSQL_USER=${NEXTCLOUD_DB_USER}
+      - MYSQL_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
+      - NEXTCLOUD_TRUSTED_DOMAINS=nc.art-institut.de
+      - OVERWRITEHOST=nc.art-institut.de
+      - OVERWRITEPROTOCOL=https
+      - APACHE_DISABLE_REWRITE_IP=1
+    volumes:
+      - nextcloud_data:/var/www/html
+    networks:
+      - proxy_net
+
+volumes:
+  kimai_db_data: {}
+  kimai_public: {}
+  kimai_var: {}
+  nextcloud_db_data: {}
+  nextcloud_data: {}
+
+networks:
+  proxy_net:
+    external: true

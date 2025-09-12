@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Art Institut – Übersicht</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif; margin: 0; line-height: 1.5; }
+    header { padding: 3rem 1rem; text-align: center; background: #0b132b; color: #fff; }
+    header h1 { margin: 0 0 .5rem; font-weight: 700; }
+    header p { margin: 0; opacity: .9; }
+    main { max-width: 900px; margin: -2rem auto 3rem; padding: 0 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    a.card { display: block; padding: 1.25rem; border-radius: 12px; text-decoration: none; border: 1px solid #e0e0e0; background: #fff; color: #0b132b; box-shadow: 0 1px 3px rgba(0,0,0,.06); transition: transform .1s ease, box-shadow .2s ease; }
+    a.card:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.08); }
+    .card h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+    .card p { margin: 0; color: #444; font-size: .95rem; }
+    footer { text-align: center; color: #666; padding: 2rem 1rem; font-size: .9rem; }
+    @media (prefers-color-scheme: dark) {
+      a.card { background: #111827; border-color: #253046; color: #e5e7eb; }
+      .card p { color: #a1a1aa; }
+      body { background: #0b132b; color: #e5e7eb; }
+    }
+  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230b132b'/%3E%3Ctext x='50' y='58' font-size='50' text-anchor='middle' fill='white'%3EA%3C/text%3E%3C/svg%3E">
+  <meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+  <header>
+    <h1>Art Institut – Übersicht</h1>
+    <p>Schnelle Links zu Diensten</p>
+  </header>
+  <main>
+    <div class="grid">
+      <!-- 1) Webmail -->
+      <a class="card" href="https://webmail.art-institut.de" target="_parent" rel="noopener noreferrer">
+        <h3>Webmail</h3>
+        <p>webmail.art-institut.de</p>
+        <p>E-Mails im Browser abrufen und verwalten.</p>
+      </a>
+
+      <!-- 2) Daten (Nextcloud) -->
+      <a class="card" href="https://nc.art-institut.de/" target="_parent" rel="noopener">
+        <h3>Daten (Nextcloud)</h3>
+        <p>nc.art-institut.de</p>
+        <p>Dateien sicher teilen, synchronisieren und zusammenarbeiten.</p>
+      </a>
+
+      <!-- 3) Zeiterfassung (Kimai) -->
+      <a class="card" href="https://kimai.art-institut.de/" target="_parent" rel="noopener">
+        <h3>Zeiterfassung (Kimai)</h3>
+        <p>kimai.art-institut.de</p>
+        <p>Arbeitszeiten erfassen, Projekte und Auswertungen verwalten.</p>
+      </a>
+
+      <!-- 4) Website -->
+      <a class="card" href="https://www.art-institut.de" target="_parent" rel="noopener noreferrer">
+        <h3>Website</h3>
+        <p>www.art-institut.de</p>
+        <p>Öffentliche Webseite des Art Instituts.</p>
+      </a>
+
+      <!-- 5) Hosting -->
+      <a class="card" href="https://customercontrolpanel.de" target="_parent" rel="noopener noreferrer">
+        <h3>Hosting</h3>
+        <p>customercontrolpanel.de</p>
+        <p>Kundenportal für Hosting, Domains und Einstellungen.</p>
+      </a>
+
+      <!-- 6) Repository -->
+      <a class="card" href="https://github.com/tekercibasi/art-institut" target="_parent" rel="noopener noreferrer">
+        <h3>Repository</h3>
+        <p>github.com/tekercibasi/art-institut</p>
+        <p>Quellcode und Docker-Setup für diese Übersicht.</p>
+      </a>
+    </div>
+  </main>
+  <footer>
+    <span>&copy; Art Institut</span>
+  </footer>
+  
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Node/npm
+node_modules/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Docker
+*.log
+.env
+
+# Kimai / Nextcloud data (handled via volumes)
+data/
+var/
