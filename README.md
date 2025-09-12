@@ -23,7 +23,7 @@ Copy `.env.example` to `.env` and set STRONG passwords. Do not commit `.env`.
 2) Bootstrap containers
 
 ```bash
-cd /home/art-insitut
+cd /home/art-institut
 docker compose up -d
 ```
 
@@ -74,7 +74,7 @@ docker compose restart overview
 This folder is initialized as a git repository. Set the remote to `tekercibasi/art-institut` when the remote repo exists, then push:
 
 ```bash
-cd /home/art-insitut
+cd /home/art-institut
 git remote add origin https://github.com/tekercibasi/art-institut.git
 git push -u origin main
 ```

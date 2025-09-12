@@ -10,7 +10,7 @@ This document defines how humans and AI agents should work in this repo.
 
 ## Scope & Guardrails
 
-- Only touch files under `/home/art-insitut` unless explicitly instructed.
+- Only touch files under `/home/art-institut` unless explicitly instructed.
 - Do not change `/home/nginx-proxy` or other stacks unless asked.
 - Never commit secrets. Use a local `.env` (untracked) for overrides. See `.env.example`.
 - Keep changes minimal, focused, and reversible. Prefer additive diffs.
@@ -55,7 +55,7 @@ Notes:
    - Keep all services on `proxy_net` for NPM visibility.
 
 3) Bring services up/down
-   - `cd /home/art-insitut`
+   - `cd /home/art-institut`
    - Up: `docker compose up -d`
    - Down: `docker compose down` (does not remove volumes by default)
    - Restart single service: `docker compose restart overview` (or `kimai`, `nextcloud`)
