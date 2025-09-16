@@ -33,7 +33,10 @@ services:
       - APP_ENV=prod
       - TRUSTED_PROXIES=0.0.0.0/0
       - TRUSTED_HOSTS=kimai.art-institut.de
-      - DATABASE_URL=mysql://${KIMAI_DB_USER}:${KIMAI_DB_PASSWORD}@kimai-db:3306/${KIMAI_DB_NAME}
+      # Password must be URL-encoded for Kimai's startup (dbtest.php urldecode)
+      - DATABASE_URL=mysql://kimai:${KIMAI_DB_PASSWORD_URLENC}@kimai-db:3306/kimai
+      - MAILER_URL=${KIMAI_MAILER_DSN}
+      - MAILER_FROM=${KIMAI_MAILER_FROM}
       # Optional: set admin seeding on first run
       # - ADMINMAIL=admin@art-institut.de
       # - ADMINPASS=change-me
@@ -43,6 +46,7 @@ services:
       - kimai_var:/opt/kimai/var
     networks:
       - proxy_net
+      - default
 
   # Nextcloud (files)
   nextcloud-db:
@@ -64,19 +68,31 @@ services:
     restart: unless-stopped
     depends_on:
       - nextcloud-db
+      - redis
     environment:
       - MYSQL_HOST=nextcloud-db
       - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
       - MYSQL_USER=${NEXTCLOUD_DB_USER}
       - MYSQL_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
-      - NEXTCLOUD_TRUSTED_DOMAINS=nc.art-institut.de
-      - OVERWRITEHOST=nc.art-institut.de
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.art-institut.de nc.art-institut.de
+      - OVERWRITEHOST=nextcloud.art-institut.de
       - OVERWRITEPROTOCOL=https
       - APACHE_DISABLE_REWRITE_IP=1
     volumes:
       - nextcloud_data:/var/www/html
     networks:
       - proxy_net
+      - default
+
+  redis:
+    image: redis:7-alpine
+    container_name: art-institut-redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - default
 
 volumes:
   kimai_db_data: {}
@@ -84,6 +100,7 @@ volumes:
   kimai_var: {}
   nextcloud_db_data: {}
   nextcloud_data: {}
+  redis_data: {}
 
 networks:
   proxy_net:
