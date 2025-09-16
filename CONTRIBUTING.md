@@ -6,7 +6,7 @@ Thanks for helping maintain the overview, Kimai, and Nextcloud setup. This guide
 
 ### Prerequisites
 - Docker & Docker Compose
-- Optional: Node.js if you add tooling, but not required for current stack
+- Node.js 18+ and npm (required for commit hooks)
 
 ### Setup
 1. Clone/copy the repo on the target host.
@@ -16,7 +16,12 @@ Thanks for helping maintain the overview, Kimai, and Nextcloud setup. This guide
    cd /home/art-institut
    docker compose up -d
    ```
-4. Ensure Nginx Proxy Manager maps the public domains. Typical proxy rules:
+4. Install dev tooling and Git hooks:
+   ```bash
+   npm install
+   npm run prepare
+   ```
+5. Ensure Nginx Proxy Manager maps the public domains. Typical proxy rules:
    - `nextcloud.art-institut.de` → `http://art-institut-nextcloud`
    - `kimai.art-institut.de` → `http://art-institut-kimai:8001`
    - `cloud.art-institut.de` → `http://art-institut-overview`

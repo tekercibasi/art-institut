@@ -46,6 +46,7 @@ Before declaring work done:
 Do:
 - Limit changes to this repo unless asked.
 - Update docs when workflows change.
+- Run `npm install && npm run prepare` after cloning so Husky hooks work.
 - Use Conventional Commit style messages (see CONTRIBUTING).
 
 Don’t:
