@@ -7,9 +7,11 @@
   <style>
     :root { color-scheme: light dark; }
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif; margin: 0; line-height: 1.5; }
-    header { padding: 3rem 1rem; text-align: center; background: #0b132b; color: #fff; }
+    header { padding: 2.5rem 1rem 2rem; text-align: center; background: #0b132b; color: #fff; }
     header h1 { margin: 0 0 .5rem; font-weight: 700; }
     header p { margin: 0; opacity: .9; }
+    .brand { display: inline-flex; align-items: center; gap: .75rem; margin-bottom: .5rem; }
+    .brand img { height: 48px; width: auto; }
     main { max-width: 900px; margin: -2rem auto 3rem; padding: 0 1rem; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
     a.card { display: block; padding: 1.25rem; border-radius: 12px; text-decoration: none; border: 1px solid #e0e0e0; background: #fff; color: #0b132b; box-shadow: 0 1px 3px rgba(0,0,0,.06); transition: transform .1s ease, box-shadow .2s ease; }
@@ -28,7 +30,11 @@
 </head>
 <body>
   <header>
-    <h1>Art Institut – Übersicht</h1>
+    <div class="brand">
+      <img src="logo_art_square_no_bg.png" alt="ART Logo" /><br>
+    </div>
+          <h1 style="margin:0">Art Institut – Übersicht</h1>
+
     <p>Schnelle Links zu Diensten</p>
   </header>
   <main>
@@ -41,9 +47,9 @@
       </a>
 
       <!-- 2) Daten (Nextcloud) -->
-      <a class="card" href="https://nc.art-institut.de/" target="_parent" rel="noopener">
+      <a class="card" href="https://nextcloud.art-institut.de/" target="_parent" rel="noopener">
         <h3>Daten (Nextcloud)</h3>
-        <p>nc.art-institut.de</p>
+        <p>nextcloud.art-institut.de</p>
         <p>Dateien sicher teilen, synchronisieren und zusammenarbeiten.</p>
       </a>
 
@@ -77,7 +83,18 @@
     </div>
   </main>
   <footer>
-    <span>&copy; Art Institut</span>
+    <section style="max-width:900px;margin:1rem auto 0;font-size:.85rem;text-align:left;color:#777;line-height:1.4">
+      <h3 style="margin:.5rem 0 0;font-size:1rem;color:inherit">Impressum/Disclaimer</h3>
+      <p style="margin:.25rem 0 0">ART - Gesellschaft für angewandte Regeneration und Transformation GmbH &amp; Co. KG<br>
+      Persönlich haftende Gesellschafterin: Tschoepke Verwaltungs-GmbH • Sitz: Dielkirchen<br>
+      Amtsgericht-Registergericht: Kaiserslautern - HRB 32724 • Geschäftsführer: Michael Tschoepke</p>
+      <p style="margin:.75rem 0 0"><strong>Verantwortlich:</strong> Michael Tschoepke</p>
+      <p>Bitte denken Sie an die Umwelt, bevor Sie diese E-Mail ausdrucken.</p>
+      <p><strong>Rechtliche Informationen:</strong> Der Inhalt dieser Nachricht ist vertraulich. Sollten Sie sie irrtümlich erhalten haben, informieren Sie uns bitte und löschen Sie die Nachricht. Es ist verboten, den Inhalt dieser Nachricht zu kopieren, weiterzuleiten oder in irgendeiner Weise an Dritte weiterzugeben. Die Integrität und Sicherheit dieser E-Mail können nicht garantiert werden. Der Absender kann daher nicht für Schäden haftbar gemacht werden, die durch diese Nachricht verursacht werden.</p>
+      <p><strong>Informationen zum Datenschutz:</strong> Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre personenbezogenen Daten nur, wenn wir ein berechtigtes Interesse an der Verarbeitung dieser Daten haben (Art. 6(1)(f) GDPR), wenn Sie in die Verarbeitung Ihrer Daten eingewilligt haben (Art. 6(1)(a) GDPR), wenn die Verarbeitung der Daten für die Entwicklung, die Begründung, den Inhalt oder die Änderung eines Rechtsverhältnisses zwischen Ihnen und unserem Unternehmen erforderlich ist (Art. 6(1)(b) GDPR) oder wenn eine andere Rechtsvorschrift die Verarbeitung dieser Daten erlaubt. Ihre personenbezogenen Daten bleiben in unserem Besitz, bis Sie uns zur Löschung der Daten auffordern, Ihre Einwilligung zur Speicherung der Daten widerrufen oder der Zweck für die Datenspeicherung entfällt (z. B. wenn Ihre Anfrage abschließend bearbeitet worden ist). Zwingende gesetzliche Vorschriften, insbesondere steuer- und handelsrechtliche Aufbewahrungsfristen bleiben unberührt. Sie haben außerdem ein Widerspruchsrecht, ein Recht auf Datenübertragbarkeit und das Recht, eine Beschwerde bei der zuständigen Aufsichtsbehörde einzureichen. Darüber hinaus können Sie die Berichtigung, Löschung und, unter bestimmten Umständen, die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten verlangen. Weitere Informationen finden Sie in unserer Datenschutzerklärung unter art-institut.de.</p>
+    </section>
+        <span>&copy; ART - Gesellschaft für angewandte Regeneration und Transformation GmbH &amp; Co. KG</span>
+
   </footer>
   
 </body>
