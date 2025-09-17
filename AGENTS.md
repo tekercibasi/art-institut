@@ -31,6 +31,7 @@ This file captures the context and house rules for anyone (human or AI) updating
 - Nextcloud uses MariaDB and Redis (locking). Config tweaks belong in `config/config.php` via `occ`.
 - Redis password is set via `.env` → `REDIS_PASSWORD` and consumed by both Redis and Nextcloud.
 - SMTP should be configured in both apps before going live; test via CLI (Kimai `kimai:mail:test`, Nextcloud `occ mail:test`).
+- TURN (`art-institut-turn`) provides STUN/TURN services for Talk; keep DNS for `${TURN_DOMAIN}` pointing at this host and rotate `TURN_SHARED_SECRET` via `.env` when needed.
 
 ## Safety Checklist
 
@@ -61,6 +62,8 @@ Don’t:
 - Logs: `docker compose logs -f nextcloud`
 - Nextcloud CLI: `docker exec -it art-institut-nextcloud bash -lc 'su -s /bin/sh www-data -c "php occ <cmd>"'`
 - Kimai CLI: `docker exec -it art-institut-kimai /opt/kimai/bin/console <cmd>`
+- TURN CLI: `docker logs -f art-institut-turn`
+- Cron: host root crontab runs `docker exec -u www-data art-institut-nextcloud php occ system:cron` every 5 minutes; adjust via `crontab -e`.
 
 ## Operational Memory (2025-09)
 

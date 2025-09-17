@@ -94,6 +94,30 @@ services:
     networks:
       - default
 
+  turn:
+    image: coturn/coturn:latest
+    container_name: art-institut-turn
+    restart: unless-stopped
+    command:
+      - turnserver
+      - --listening-port=3478
+      - --listening-ip=0.0.0.0
+      - --external-ip=${TURN_PUBLIC_IP}
+      - --min-port=${TURN_MIN_PORT}
+      - --max-port=${TURN_MAX_PORT}
+      - --realm=${TURN_REALM}
+      - --use-auth-secret
+      - --static-auth-secret=${TURN_SHARED_SECRET}
+      - --no-loopback-peers
+      - --no-multicast-peers
+      - --stale-nonce
+      - --fingerprint
+      - --log-file=stdout
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "${TURN_MIN_PORT}-${TURN_MAX_PORT}:${TURN_MIN_PORT}-${TURN_MAX_PORT}/udp"
+
 volumes:
   kimai_db_data: {}
   kimai_public: {}
