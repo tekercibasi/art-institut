@@ -7,7 +7,7 @@ This repo holds the overview page and Docker setup for:
 - Nextcloud (files)
 - TURN/STUN relay for Nextcloud Talk
 
-Reverse-proxy is handled by Nginx Proxy Manager running on this host at `/home/nginx-proxy`.
+Reverse-proxy is handled by Nginx Proxy Manager running on this host at `/srv/nginx-proxy`.
 
 ## Prerequisites
 
@@ -24,7 +24,7 @@ Copy `.env.example` to `.env` and set STRONG passwords. Do not commit `.env`.
 2) Bootstrap containers
 
 ```bash
-cd /home/art-institut
+cd /srv/art-institut
 docker compose up -d
 ```
 
@@ -72,7 +72,7 @@ You can override DB credentials with environment variables in your shell or a `.
 
 ## Backups
 
-`/home/art-institut/scripts/backup.py` creates full-system archives (databases, Docker volumes, repository snapshot, Nextcloud master key). Backups are stored in `/home/art-institut/backups` and automatically pruned to keep:
+`/srv/art-institut/scripts/backup.py` creates full-system archives (databases, Docker volumes, repository snapshot, Nextcloud master key). Backups are stored in `/srv/art-institut/backups` and automatically pruned to keep:
 
 - every 15 minutes for the last 2 hours
 - every 30 minutes for the last 24 hours
@@ -83,12 +83,12 @@ You can override DB credentials with environment variables in your shell or a `.
 Usage examples:
 
 ```bash
-/home/art-institut/scripts/backup.py run     # create a backup now
-/home/art-institut/scripts/backup.py list    # list stored backups
-/home/art-institut/scripts/backup.py check   # verify the latest backup
+/srv/art-institut/scripts/backup.py run     # create a backup now
+/srv/art-institut/scripts/backup.py list    # list stored backups
+/srv/art-institut/scripts/backup.py check   # verify the latest backup
 ```
 
-Root’s crontab runs the backup script every 15 minutes and writes its output to `/home/art-institut/backups/backup.log`. Ensure that file is rotated or periodically trimmed.
+Root’s crontab runs the backup script every 15 minutes and writes its output to `/srv/art-institut/backups/backup.log`. Ensure that file is rotated or periodically trimmed.
 
 ## Development
 
@@ -104,7 +104,7 @@ docker compose restart overview
 This folder is initialized as a git repository. Set the remote to `tekercibasi/art-institut` when the remote repo exists, then push:
 
 ```bash
-cd /home/art-institut
+cd /srv/art-institut
 git remote add origin https://github.com/tekercibasi/art-institut.git
 git push -u origin main
 ```
