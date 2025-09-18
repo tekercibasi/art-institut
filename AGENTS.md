@@ -35,6 +35,32 @@ This file captures the context and house rules for anyone (human or AI) updating
 - Nextcloud server-side encryption (master key) is enabled; keep backups of `/var/www/html/data/files_encryption/` and avoid disabling encryption once in use.
 - TURN certificates live under /etc/letsencrypt/live/turn.art-institut.de/ and are mounted into the TURN container; renewals are handled by certbot (standalone).
 
+### Backup & Restore
+
+- Automated full-system backups run every 15 minutes via `/home/art-institut/scripts/backup.py` (see cron entry). Archives land in `/home/art-institut/backups` with tiered retention.
+- Manual usage:
+  - `python scripts/backup.py run` — create backup immediately (also prunes old ones)
+  - `python scripts/backup.py list` — show available archives (newest first)
+  - `python scripts/backup.py check [FILE]` — verify archive integrity (default: latest)
+- Each archive contains: Kimai + Nextcloud SQL dumps, all Docker volumes, git tree snapshot, and `/var/www/html/data/files_encryption/`.
+- Restore outline (document details in private runbook):
+  1. Unpack archive on target host (`tar --zstd -xf ...`)
+  2. Recreate named Docker volumes and load tarballs (`docker run --rm -v volume:/restore busybox tar xzf -`)
+  3. Import SQL dumps into fresh MariaDB containers
+  4. Restore `/var/www/html/data/files_encryption/` into the Nextcloud data path before first start
+  5. Copy repo files into `/home/art-institut` (respect permissions) and start stack (`docker compose up -d`)
+- Keep off-site copies of `backups/*.tar.zst` regularly (e.g., download to Google Drive) and ensure `backup.log` is rotated.
+
+### Monitoring & Ops Notes
+
+- Server: 4 vCPU / 16 GB RAM / 320 GB disk (Netcup RS class). Watch `docker stats`, `htop`, and Nextcloud admin monitoring for saturation.
+- Logs to watch: `docker compose logs nextcloud`, `docker compose logs kimai`, `docker logs art-institut-turn`, `/home/art-institut/backups/backup.log`.
+- Cron jobs (root):
+  - `*/5 * * * * docker exec -u www-data art-institut-nextcloud php occ system:cron >/dev/null 2>&1`
+  - `*/15 * * * * /home/art-institut/scripts/backup.py run >> /home/art-institut/backups/backup.log 2>&1`
+- SSL: Web endpoints via NPM (Let’s Encrypt); TURN/STUN via standalone certbot (`/etc/letsencrypt/live/turn.art-institut.de/`). Renewals auto-run, but monitor expiry.
+- Security: `.env` is untracked; update `.env.example` when variables change so new deployments match current config.
+
 ## Safety Checklist
 
 Before declaring work done:
