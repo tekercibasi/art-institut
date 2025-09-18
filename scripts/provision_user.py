@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Provision a new user in Nextcloud and Kimai.
+"""Provision a new user in Nextcloud, Kimai, and (optionally) Netcup mailserver.
 
 Usage:
     ./provision_user.py --email user@example.com --first-name Alice --last-name Smith
@@ -8,11 +8,10 @@ The script will:
   * derive a username (e.g. a.smith) and ensure uniqueness
   * check whether the user/email already exists in Nextcloud or Kimai
   * create the user in both systems with a shared random password
+  * optionally create a Netcup mailbox (if NETCUP_* env vars are set and `zeep` is installed)
   * print the generated credentials for manual delivery
 
 Kimai defaults to ROLE_USER; adjust with --kimai-roles if needed.
-
-Netcup mailbox creation is not automated here; see the README notes below.
 """
 from __future__ import annotations
 
@@ -27,6 +26,13 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
+
+try:
+from netcup_mail import NetcupMailClient
+    HAS_NETCUP = True
+except ImportError:
+    NetcupMailClient = None  # type: ignore
+    HAS_NETCUP = False
 
 BASE_DIR = Path("/home/art-institut")
 NEXTCLOUD_CONTAINER = "art-institut-nextcloud"
@@ -45,6 +51,7 @@ class ProvisionResult:
     password: str
     nextcloud_created: bool
     kimai_created: bool
+    netcup_created: Optional[bool] = None
 
 # ---------------------------------------------------------------------------
 # Utility helpers
@@ -148,6 +155,15 @@ def create_nextcloud_user(username: str, email: str, display_name: str, password
             return False
         raise
 
+
+def set_nextcloud_language(username: str, language: str = "de", locale: str = "de_DE") -> None:
+    user_q = shlex.quote(username)
+    try:
+        occ(f"php occ user:setting {user_q} settings language {language}")
+        occ(f"php occ user:setting {user_q} locale locale {locale}")
+    except RuntimeError as exc:
+        print(f"Warnung: Konnte Sprache für Nextcloud-Benutzer {username} nicht setzen: {exc}")
+
 # ---------------------------------------------------------------------------
 # Kimai helpers
 
@@ -205,6 +221,29 @@ def create_kimai_user(username: str, email: str, password: str, roles: List[str]
 # Provision workflow
 
 
+
+
+def create_mailbox_if_configured(email: str, username: str, password: str, first: str, last: str) -> Optional[dict]:
+    if not HAS_NETCUP:
+        return None
+    if not (NETCUP_CUSTOMER_NUMBER and NETCUP_API_KEY and NETCUP_API_PASSWORD and NETCUP_MAIL_DOMAIN):
+        return None
+    client = NetcupMailClient(NETCUP_CUSTOMER_NUMBER, NETCUP_API_KEY, NETCUP_API_PASSWORD)
+    try:
+        client.login()
+        mailbox_result = client.create_mailbox(
+            domain=NETCUP_MAIL_DOMAIN,
+            username=username,
+            password=password,
+            quota_mb=NETCUP_MAIL_QUOTA_MB,
+            firstname=first,
+            lastname=last,
+        )
+        return mailbox_result
+    finally:
+        client.logout()
+
+
 def provision_user(email: str, first: str, last: str, kimai_roles: List[str]) -> ProvisionResult:
     if "@" not in email:
         raise ValueError("Email address must contain '@'")
@@ -227,18 +266,39 @@ def provision_user(email: str, first: str, last: str, kimai_roles: List[str]) ->
     display_name = f"{first} {last}".strip()
 
     nc_created = create_nextcloud_user(username, email, display_name, password)
+    if nc_created:
+        set_nextcloud_language(username)
     kimai_created = create_kimai_user(username, email, password, kimai_roles)
+    netcup_result = None
+    try:
+        netcup_result = create_mailbox_if_configured(email, username, password, first, last)
+    except Exception as exc:
+        print(f"Netcup mailbox creation failed: {exc}")
 
-    return ProvisionResult(
+    result = ProvisionResult(
         username=username,
         password=password,
         nextcloud_created=nc_created,
         kimai_created=kimai_created,
+        netcup_created=None,
     )
+    if netcup_result is not None:
+        result.netcup_created = True
+        print('Netcup mailbox created:', netcup_result)
+    elif NETCUP_CUSTOMER_NUMBER:
+        result.netcup_created = False
+        print('Netcup mailbox creation skipped; check NETCUP_* env vars if you want auto-mailboxes.')
+    return result
 
 # ---------------------------------------------------------------------------
 # CLI
 
+
+NETCUP_CUSTOMER_NUMBER = os.getenv('NETCUP_CUSTOMER_NUMBER')
+NETCUP_API_KEY = os.getenv('NETCUP_API_KEY')
+NETCUP_API_PASSWORD = os.getenv('NETCUP_API_PASSWORD')
+NETCUP_MAIL_DOMAIN = os.getenv('NETCUP_MAIL_DOMAIN')
+NETCUP_MAIL_QUOTA_MB = int(os.getenv('NETCUP_MAIL_QUOTA_MB', '2048'))
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Provision a user in Nextcloud and Kimai")
@@ -261,22 +321,30 @@ def main() -> None:
     except Exception as exc:
         raise SystemExit(f"ERROR: {exc}")
 
-    print("User provisioning complete")
+    print("Benutzeranlage abgeschlossen")
     print("--------------------------------")
-    print(f"Username: {result.username}")
-    print(f"Password: {result.password}")
-    print(f"Nextcloud user created: {'yes' if result.nextcloud_created else 'no (already existed?)'}")
-    print(f"Kimai user created: {'yes' if result.kimai_created else 'no (already existed?)'}")
+    print(f"Benutzername: {result.username}")
+    print(f"Initiales Passwort: {result.password}")
+    print(f"Nextcloud angelegt: {'ja' if result.nextcloud_created else 'nein (existierte bereits?)'}")
+    print(f"Kimai angelegt: {'ja' if result.kimai_created else 'nein (existierte bereits?)'}")
+    if result.netcup_created is True:
+        print("Netcup-Postfach angelegt: ja (siehe Antwort oben)")
+    elif result.netcup_created is False:
+        print("Netcup-Postfach angelegt: nein (Fehler siehe oben)")
     print()
-    print("Next steps:")
-    print("  - Share the credentials securely with the user and encourage immediate password change.")
-    print("  - Create/assign the corresponding mailbox in Netcup manually (API requires separate credentials).")
-    print("  - Add group memberships or roles as required in both systems.")
+    print("Nächste Schritte:")
+    print("  - Zugangsdaten sicher an den Benutzer übermitteln und um sofortige Passwortänderung bitten.")
+    print("  - Benötigte Gruppen/Rollen in beiden Systemen ergänzen.")
+    if result.netcup_created is None:
+        print("  - Netcup-Postfach manuell anlegen (NETCUP_* Variablen setzen, um dies zu automatisieren).")
     print()
-    print("Netcup mailboxes:")
-    print("  This script does NOT create mailboxes automatically. Use the Netcup CCP or their SOAP/JSON API")
-    print("  (https://ccp.netcup.net/run/webservice/serverservice/) with your customer number, API key and password.")
-    print("  Consider extending this script once those credentials can be provided securely.")
+    print("Vorschlag für Begrüßungsnachricht:")
+    print("  Nextcloud: https://nextcloud.art-institut.de")
+    print(f"    • Benutzername: {result.username}")
+    print(f"    • Initiales Passwort: {result.password}")
+    print("    • Nach dem ersten Login bitte unter Einstellungen → Sicherheit das Passwort ändern und ggf. 2FA aktivieren.")
+    print("  Kimai: https://kimai.art-institut.de")
+    print("    • Anmeldung mit denselben Zugangsdaten. Passwortänderung unter Mein Profil → Passwort.")
 
 
 if __name__ == "__main__":

@@ -103,6 +103,8 @@ Use `/srv/art-institut/scripts/provision_user.py` to create a matching user in N
 
 The script checks for existing accounts, generates a strong password, and prints a summary. Optional `--kimai-roles` overrides the default `ROLE_USER`. Netcup mailboxes must still be created manually (CCP or Netcup API).
 
+Wenn in `.env` die Netcup-Zugangsdaten (`NETCUP_CUSTOMER_NUMBER`, `NETCUP_API_KEY`, `NETCUP_API_PASSWORD`, `NETCUP_MAIL_DOMAIN`, `NETCUP_MAIL_QUOTA_MB`) hinterlegt sind und das Python-Paket `zeep` installiert ist, wird zusätzlich das Netcup-Postfach angelegt. Danach erhalten Sie eine deutschsprachige Abschnittsempfehlung für die Willkommensmail (inkl. Hinweis auf Passwortänderung und 2FA in Nextcloud).
+
 ## Development
 
 - Edit the overview landing page in `web/index.html`.

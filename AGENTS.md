@@ -48,7 +48,8 @@ This file captures the context and house rules for anyone (human or AI) updating
 
 - The script derives a unique username, creates accounts in both systems, and prints the generated password. Optional `--kimai-roles` (comma-separated) overrides the default `ROLE_USER`.
 - It refuses to proceed if the email already exists in either system.
-- Mailboxes on Netcup must still be created manually (via CCP or Netcup API with your credentials).
+- If `NETCUP_*` environment variables are set and the Python `zeep` package is installed, the script also creates the Netcup mailbox automatically. Otherwise, create the mailbox manually in the CCP.
+- Nach der Anlage wird die Nextcloud-Oberfläche standardmäßig auf Deutsch (`language=de`, `locale=de_DE`) gesetzt.
 
 ### Backup & Restore
 
