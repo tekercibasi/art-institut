@@ -33,6 +33,7 @@ This file captures the context and house rules for anyone (human or AI) updating
 - SMTP should be configured in both apps before going live; test via CLI (Kimai `kimai:mail:test`, Nextcloud `occ mail:test`).
 - TURN (`art-institut-turn`) provides STUN/TURN services for Talk; keep DNS for `${TURN_DOMAIN}` pointing at this host and rotate `TURN_SHARED_SECRET` via `.env` when needed.
 - Nextcloud server-side encryption (master key) is enabled; keep backups of `/var/www/html/data/files_encryption/` and avoid disabling encryption once in use.
+- TURN certificates live under /etc/letsencrypt/live/turn.art-institut.de/ and are mounted into the TURN container; renewals are handled by certbot (standalone).
 
 ## Safety Checklist
 

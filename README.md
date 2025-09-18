@@ -45,7 +45,7 @@ Ensure the host (root) crontab runs `docker exec -u www-data art-institut-nextcl
 
 5) TURN/STUN DNS & firewall
 
-Point DNS for `turn.art-institut.de` (and optionally `stun.art-institut.de`) at this server. Open UDP/TCP 3478 and the relay port range (defaults 49160–49200/UDP). Configure Talk via `occ talk:turn:add`/`talk:stun:add` as described in `AGENTS.md`.
+Point DNS for `turn.art-institut.de` (and optionally `stun.art-institut.de`) at this server. Open UDP/TCP 3478 and the relay port range (defaults 49160–49200/UDP). TLS runs on 5349/tcp+udp using the certificate from `/etc/letsencrypt/live/turn.art-institut.de/`. Configure Talk via `occ talk:turn:add`/`talk:stun:add` as described in `AGENTS.md`.
 
 Notes:
 - For Nextcloud sub-path operation, this compose sets `OVERWRITEWEBROOT=/nextcloud` and trusted host/protocol vars.

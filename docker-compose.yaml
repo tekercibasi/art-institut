@@ -110,11 +110,19 @@ services:
       - --static-auth-secret=${TURN_SHARED_SECRET}
       - --stale-nonce
       - --fingerprint
+      - --cert=/certs/turn/fullchain.pem
+      - --pkey=/certs/turn/privkey.pem
+      - --tls-listening-port=5349
       - --log-file=stdout
     ports:
       - "3478:3478"
       - "3478:3478/udp"
+      - "5349:5349"
+      - "5349:5349/udp"
       - "${TURN_MIN_PORT}-${TURN_MAX_PORT}:${TURN_MIN_PORT}-${TURN_MAX_PORT}/udp"
+    volumes:
+      - ${TURN_CERT_PATH}:/certs/turn/fullchain.pem:ro
+      - ${TURN_KEY_PATH}:/certs/turn/privkey.pem:ro
 
 volumes:
   kimai_db_data: {}
