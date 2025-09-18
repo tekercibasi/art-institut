@@ -90,6 +90,19 @@ Usage examples:
 
 Root’s crontab runs the backup script every 15 minutes and writes its output to `/srv/art-institut/backups/backup.log`. Ensure that file is rotated or periodically trimmed.
 
+## User provisioning
+
+Use `/srv/art-institut/scripts/provision_user.py` to create a matching user in Nextcloud and Kimai:
+
+```bash
+/srv/art-institut/scripts/provision_user.py \
+    --email user@example.com \
+    --first-name Alice \
+    --last-name Example
+```
+
+The script checks for existing accounts, generates a strong password, and prints a summary. Optional `--kimai-roles` overrides the default `ROLE_USER`. Netcup mailboxes must still be created manually (CCP or Netcup API).
+
 ## Development
 
 - Edit the overview landing page in `web/index.html`.

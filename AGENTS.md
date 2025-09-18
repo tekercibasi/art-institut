@@ -35,6 +35,21 @@ This file captures the context and house rules for anyone (human or AI) updating
 - Nextcloud server-side encryption (master key) is enabled; keep backups of `/var/www/html/data/files_encryption/` and avoid disabling encryption once in use.
 - TURN certificates live under /etc/letsencrypt/live/turn.art-institut.de/ and are mounted into the TURN container; renewals are handled by certbot (standalone).
 
+### User provisioning
+
+- Use `/home/art-institut/scripts/provision_user.py` to create coordinated accounts in Nextcloud and Kimai:
+
+```bash
+/home/art-institut/scripts/provision_user.py \
+    --email user@example.com \
+    --first-name Alice \
+    --last-name Example
+```
+
+- The script derives a unique username, creates accounts in both systems, and prints the generated password. Optional `--kimai-roles` (comma-separated) overrides the default `ROLE_USER`.
+- It refuses to proceed if the email already exists in either system.
+- Mailboxes on Netcup must still be created manually (via CCP or Netcup API with your credentials).
+
 ### Backup & Restore
 
 - Automated full-system backups run every 15 minutes via `/home/art-institut/scripts/backup.py` (see cron entry). Archives land in `/home/art-institut/backups` with tiered retention.
