@@ -108,8 +108,6 @@ services:
       - --realm=${TURN_REALM}
       - --use-auth-secret
       - --static-auth-secret=${TURN_SHARED_SECRET}
-      - --no-loopback-peers
-      - --no-multicast-peers
       - --stale-nonce
       - --fingerprint
       - --log-file=stdout

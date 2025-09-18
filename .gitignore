@@ -11,6 +11,7 @@ node_modules/
 # Docker
 *.log
 .env
+backups/
 
 # Kimai / Nextcloud data (handled via volumes)
 data/

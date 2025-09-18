@@ -69,6 +69,26 @@ Named volumes:
 
 You can override DB credentials with environment variables in your shell or a `.env` file next to the compose file.
 
+## Backups
+
+`/home/art-institut/scripts/backup.py` creates full-system archives (databases, Docker volumes, repository snapshot, Nextcloud master key). Backups are stored in `/home/art-institut/backups` and automatically pruned to keep:
+
+- every 15 minutes for the last 2 hours
+- every 30 minutes for the last 24 hours
+- daily for the last 14 days
+- every 5 days for the last 30 days
+- every 30 days beyond that
+
+Usage examples:
+
+```bash
+/home/art-institut/scripts/backup.py run     # create a backup now
+/home/art-institut/scripts/backup.py list    # list stored backups
+/home/art-institut/scripts/backup.py check   # verify the latest backup
+```
+
+Root’s crontab runs the backup script every 15 minutes and writes its output to `/home/art-institut/backups/backup.log`. Ensure that file is rotated or periodically trimmed.
+
 ## Development
 
 - Edit the overview landing page in `web/index.html`.

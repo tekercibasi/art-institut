@@ -64,7 +64,7 @@ Don’t:
 - Nextcloud CLI: `docker exec -it art-institut-nextcloud bash -lc 'su -s /bin/sh www-data -c "php occ <cmd>"'`
 - Kimai CLI: `docker exec -it art-institut-kimai /opt/kimai/bin/console <cmd>`
 - TURN CLI: `docker logs -f art-institut-turn`
-- Cron: host root crontab runs `docker exec -u www-data art-institut-nextcloud php occ system:cron` every 5 minutes; adjust via `crontab -e`.
+- Cron: root crontab runs `docker exec -u www-data art-institut-nextcloud php occ system:cron` every 5 minutes and `/home/art-institut/scripts/backup.py run` every 15 minutes (logging to `backups/backup.log`). Adjust via `crontab -e`.
 
 ## Operational Memory (2025-09)
 
