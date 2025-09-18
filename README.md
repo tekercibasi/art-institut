@@ -30,13 +30,14 @@ docker compose up -d
 
 3) Create/adjust Proxy Host in Nginx Proxy Manager (GUI)
 
-Create a Proxy Host for `cloud.art-institut.de` with these locations:
+Create a Proxy Host for `cloud.art-institut.de` forwarding to `http://art-institut-overview:80` and enable SSL via Let's Encrypt.
 
-- Location `/` → Forward to `http://art-institut-overview:80`
-- Location `/kimai` → Forward to `http://art-institut-kimai:8001`
-- Location `/nextcloud` → Forward to `http://art-institut-nextcloud:80`
+Kimai and Nextcloud are exposed on dedicated hosts:
 
-Enable SSL for `cloud.art-institut.de` by requesting a new certificate.
+- `kimai.art-institut.de` → `http://art-institut-kimai:8001`
+- `nextcloud.art-institut.de` → `http://art-institut-nextcloud`
+
+Create separate proxy hosts for these domains (force SSL, pass `X-Forwarded-*` headers as usual).
 
 4) Cron job
 
