@@ -196,6 +196,37 @@ def list_backups() -> List[BackupFile]:
     return backups
 
 
+def format_bytes(value: int) -> str:
+    units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
+    size = float(value)
+    for unit in units:
+        if size < 1024 or unit == units[-1]:
+            if unit == "B":
+                return f"{int(size)} {unit}"
+            return f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{value} B"
+
+
+def format_timedelta(delta: dt.timedelta) -> str:
+    total_seconds = int(delta.total_seconds())
+    sign = "-" if total_seconds < 0 else ""
+    total_seconds = abs(total_seconds)
+    days, remainder = divmod(total_seconds, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    parts: List[str] = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
+        parts.append(f"{hours}h")
+    if minutes:
+        parts.append(f"{minutes}m")
+    if seconds or not parts:
+        parts.append(f"{seconds}s")
+    return sign + " ".join(parts)
+
+
 def prune_backups(backups: List[BackupFile]) -> List[Path]:
     now = dt.datetime.utcnow()
     keep_slots: Dict[Tuple[int, int], BackupFile] = {}
@@ -247,14 +278,35 @@ def cmd_run(_: argparse.Namespace) -> None:
 
 
 def cmd_list(_: argparse.Namespace) -> None:
+    ensure_dirs()
     backups = list_backups()
+    total_size = sum(int(b.path.stat().st_size) for b in backups if b.path.exists())
+    disk_total, _disk_used, disk_free = shutil.disk_usage(str(BACKUP_ROOT))
+
+    print("=== Backup Storage ===")
+    print(f"- path: {BACKUP_ROOT}")
+    print(f"- total: {format_bytes(disk_total)}")
+    print(f"- available: {format_bytes(disk_free)}")
+    print(f"- used by backups: {format_bytes(total_size)}")
+
     if not backups:
-        print("No backups present")
+        print("\nNo backups present.")
         return
+
+    header_name = "Archive"
+    header_time = "Captured (UTC)"
+    header_age = "Age"
+    line_length = 40 + 21 + len(header_age)
+
+    print("\n=== Stored Archives ===")
+    print(f"{header_name:<40} {header_time:<21} {header_age}")
+    print("-" * line_length)
+
     now = dt.datetime.utcnow()
     for backup in backups:
-        age = now - backup.timestamp
-        print(f"{backup.path.name}\t{backup.timestamp.isoformat()}Z\t{age}")
+        age = format_timedelta(now - backup.timestamp)
+        timestamp_str = backup.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{backup.path.name:<40} {timestamp_str:<21} {age}")
 
 
 def cmd_check(args: argparse.Namespace) -> None:

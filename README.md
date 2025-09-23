@@ -2,6 +2,8 @@
 
 This repo holds the overview page and Docker setup for:
 
+> Hinweis: In dieser Dokumentation steht der Pfad `/srv/art-institut` als Platzhalter aus Datenschutzgründen. Passe die Pfade bei Bedarf an deine lokale Verzeichnisstruktur an.
+
 - Overview page (static) served by an `nginx` container
 - Kimai (time tracking)
 - Nextcloud (files)
