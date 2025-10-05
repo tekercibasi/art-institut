@@ -95,7 +95,7 @@ Do:
 - Use Conventional Commit style messages (see CONTRIBUTING).
 
 Don’t:
-- Touch `/home/nginx-proxy` or other project folders without explicit instructions.
+- Touch `/home/svarm.de/docker/nginx-proxy` or other project folders without explicit instructions.
 - Commit `.env`, backups, or generated logs.
 - Run destructive Docker commands (`system prune`, `down -v`) unless owners confirm.
 
