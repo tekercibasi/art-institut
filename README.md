@@ -9,7 +9,7 @@ This repo holds the overview page and Docker setup for:
 - Nextcloud (files)
 - TURN/STUN relay for Nextcloud Talk
 
-Reverse-proxy is handled by Nginx Proxy Manager running on this host at `/srv/nginx-proxy`.
+Reverse-proxy is handled by the shared Nginx Proxy Manager stack located at `/home/svarm.de/docker/nginx-proxy`.
 
 ## Prerequisites
 
