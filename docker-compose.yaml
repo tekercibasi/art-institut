@@ -84,6 +84,24 @@ services:
       - proxy_net
       - default
 
+  nextcloud-cron:
+    image: nextcloud:apache
+    container_name: art-institut-nextcloud-cron
+    restart: unless-stopped
+    depends_on:
+      - nextcloud-db
+      - redis
+    entrypoint: /cron.sh
+    environment:
+      - MYSQL_HOST=nextcloud-db
+      - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
+      - MYSQL_USER=${NEXTCLOUD_DB_USER}
+      - MYSQL_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
+    volumes:
+      - nextcloud_data:/var/www/html
+    networks:
+      - default
+
   redis:
     image: redis:7-alpine
     container_name: art-institut-redis
@@ -92,6 +110,46 @@ services:
     volumes:
       - redis_data:/data
     networks:
+      - default
+
+  signaling:
+    image: strukturag/nextcloud-spreed-signaling:latest
+    container_name: art-institut-signaling
+    restart: unless-stopped
+    depends_on:
+      - nextcloud
+    environment:
+      - CONFIG=/config/server.conf
+      - HTTP_LISTEN=0.0.0.0:8080
+      - HASH_KEY=${SIGNALING_HASH_KEY}
+      - BLOCK_KEY=${SIGNALING_BLOCK_KEY}
+      - INTERNAL_SHARED_SECRET_KEY=${SIGNALING_INTERNAL_SECRET}
+      - BACKENDS=primary
+      - BACKEND_PRIMARY_URLS=https://nextcloud.art-institut.de
+      - BACKEND_PRIMARY_SHARED_SECRET=${SIGNALING_BACKEND_SECRET}
+      - TURN_SECRET=${TURN_SHARED_SECRET}
+      - TURN_SERVERS=${SIGNALING_TURN_SERVERS}
+      - TURN_API_KEY=${SIGNALING_TURN_API_KEY}
+      - TRUSTED_PROXIES=${SIGNALING_TRUSTED_PROXIES}
+      - SKIP_VERIFY=false
+    expose:
+      - "8080"
+    networks:
+      - proxy_net
+
+  whiteboard:
+    image: ghcr.io/nextcloud-releases/whiteboard:stable
+    container_name: art-institut-whiteboard
+    restart: unless-stopped
+    depends_on:
+      - nextcloud
+    environment:
+      - NEXTCLOUD_URL=https://nextcloud.art-institut.de
+      - JWT_SECRET_KEY=${WHITEBOARD_JWT_SECRET}
+    expose:
+      - "3002"
+    networks:
+      - proxy_net
       - default
 
   turn:
