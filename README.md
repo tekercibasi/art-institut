@@ -2,14 +2,14 @@
 
 This repo holds the overview page and Docker setup for:
 
-> Hinweis: In dieser Dokumentation steht der Pfad `/srv/art-institut` als Platzhalter aus Datenschutzgründen. Passe die Pfade bei Bedarf an deine lokale Verzeichnisstruktur an.
+> Hinweis: In dieser Dokumentation steht `<ART_ROOT>` für das lokale Deploy-Verzeichnis (z. B. `/srv/art-institut`). Passe die Pfade bei Bedarf an deine Struktur an.
 
 - Overview page (static) served by an `nginx` container
 - Kimai (time tracking)
 - Nextcloud (files)
 - TURN/STUN relay for Nextcloud Talk
 
-Reverse-proxy is handled by the shared Nginx Proxy Manager stack located at `/home/svarm.de/docker/nginx-proxy`.
+Reverse-proxy is handled by the shared Nginx Proxy Manager stack (referenced as `<NPM_ROOT>` in the infra docs).
 
 ## Prerequisites
 

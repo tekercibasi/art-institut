@@ -1,6 +1,8 @@
 # Agent Guide for Art Institut
 
-This file captures the context and house rules for anyone (human or AI) updating this repository. Scope: everything under `/home/art-institut`.
+This file captures the context and house rules for anyone (human or AI) updating this repository. Scope: everything under `<ART_ROOT>` (deployment path placeholder).
+
+> Placeholder legend: `<ART_ROOT>` denotes the private deployment directory for this stack, `<NPM_ROOT>` references the shared Nginx Proxy Manager project path.
 
 ## Principles
 
@@ -37,10 +39,10 @@ This file captures the context and house rules for anyone (human or AI) updating
 
 ### User provisioning
 
-- Use `/home/art-institut/scripts/provision_user.py` to create coordinated accounts in Nextcloud and Kimai:
+- Use `<ART_ROOT>/scripts/provision_user.py` to create coordinated accounts in Nextcloud and Kimai:
 
 ```bash
-/home/art-institut/scripts/provision_user.py \
+<ART_ROOT>/scripts/provision_user.py \
     --email user@example.com \
     --first-name Alice \
     --last-name Example
@@ -53,7 +55,7 @@ This file captures the context and house rules for anyone (human or AI) updating
 
 ### Backup & Restore
 
-- Automated full-system backups run every 15 minutes via `/home/art-institut/scripts/backup.py` (see cron entry). Archives land in `/home/art-institut/backups` with tiered retention.
+- Automated full-system backups run every 15 minutes via `<ART_ROOT>/scripts/backup.py` (see cron entry). Archives land in `<ART_ROOT>/backups` with tiered retention.
 - Manual usage:
   - `python scripts/backup.py run` — create backup immediately (also prunes old ones)
   - `python scripts/backup.py list` — show available archives (newest first)
@@ -64,23 +66,23 @@ This file captures the context and house rules for anyone (human or AI) updating
   2. Recreate named Docker volumes and load tarballs (`docker run --rm -v volume:/restore busybox tar xzf -`)
   3. Import SQL dumps into fresh MariaDB containers
   4. Restore `/var/www/html/data/files_encryption/` into the Nextcloud data path before first start
-  5. Copy repo files into `/home/art-institut` (respect permissions) and start stack (`docker compose up -d`)
+  5. Copy repo files into `<ART_ROOT>` (respect permissions) and start stack (`docker compose up -d`)
 - Keep off-site copies of `backups/*.tar.zst` regularly (e.g., download to Google Drive) and ensure `backup.log` is rotated.
 
 ### Monitoring & Ops Notes
 
 - Server: 4 vCPU / 16 GB RAM / 320 GB disk (Netcup RS class). Watch `docker stats`, `htop`, and Nextcloud admin monitoring for saturation.
-- Logs to watch: `docker compose logs nextcloud`, `docker compose logs kimai`, `docker logs art-institut-turn`, `/home/art-institut/backups/backup.log`.
+- Logs to watch: `docker compose logs nextcloud`, `docker compose logs kimai`, `docker logs art-institut-turn`, `<ART_ROOT>/backups/backup.log`.
 - Cron jobs (root):
   - `*/5 * * * * docker exec -u www-data art-institut-nextcloud php occ system:cron >/dev/null 2>&1`
-  - `*/15 * * * * /home/art-institut/scripts/backup.py run >> /home/art-institut/backups/backup.log 2>&1`
+- `*/15 * * * * <ART_ROOT>/scripts/backup.py run >> <ART_ROOT>/backups/backup.log 2>&1`
 - SSL: Web endpoints via NPM (Let’s Encrypt); TURN/STUN via standalone certbot (`/etc/letsencrypt/live/turn.art-institut.de/`). Renewals auto-run, but monitor expiry.
 - Security: `.env` is untracked; update `.env.example` when variables change so new deployments match current config.
 
 ## Safety Checklist
 
 Before declaring work done:
-1. `cd /home/art-institut` and run `docker compose config`.
+1. `cd <ART_ROOT>` and run `docker compose config`.
 2. `docker compose up -d` (or restart specific services) and ensure containers stay healthy.
 3. `docker ps` confirms status/health checks.
 4. For UI updates, load `https://nextcloud.art-institut.de` and `https://kimai.art-institut.de`.
@@ -95,7 +97,7 @@ Do:
 - Use Conventional Commit style messages (see CONTRIBUTING).
 
 Don’t:
-- Touch `/home/svarm.de/docker/nginx-proxy` or other project folders without explicit instructions.
+- Touch `<NPM_ROOT>` or other project folders without explicit instructions.
 - Commit `.env`, backups, or generated logs.
 - Run destructive Docker commands (`system prune`, `down -v`) unless owners confirm.
 
@@ -107,7 +109,7 @@ Don’t:
 - Nextcloud CLI: `docker exec -it art-institut-nextcloud bash -lc 'su -s /bin/sh www-data -c "php occ <cmd>"'`
 - Kimai CLI: `docker exec -it art-institut-kimai /opt/kimai/bin/console <cmd>`
 - TURN CLI: `docker logs -f art-institut-turn`
-- Cron: root crontab runs `docker exec -u www-data art-institut-nextcloud php occ system:cron` every 5 minutes and `/home/art-institut/scripts/backup.py run` every 15 minutes (logging to `backups/backup.log`). Adjust via `crontab -e`.
+- Cron: root crontab runs `docker exec -u www-data art-institut-nextcloud php occ system:cron` every 5 minutes and `<ART_ROOT>/scripts/backup.py run` every 15 minutes (logging to `backups/backup.log`). Adjust via `crontab -e`.
 
 ## Operational Memory (2025-09)
 

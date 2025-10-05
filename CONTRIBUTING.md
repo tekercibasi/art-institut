@@ -13,7 +13,7 @@ Thanks for helping maintain the overview, Kimai, and Nextcloud setup. This guide
 2. Create `.env` from `.env.example` and fill in **strong** passwords, SMTP creds, Redis password, etc. `.env` is gitignored.
 3. Bring services online:
    ```bash
-   cd /home/art-institut
+   cd <ART_ROOT>
    docker compose up -d
    ```
 4. Install dev tooling and Git hooks:

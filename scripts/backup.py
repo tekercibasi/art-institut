@@ -32,11 +32,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
-BACKUP_ROOT = Path("/home/art-institut/backups")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_NAME = REPO_ROOT.name
+BACKUP_ROOT = REPO_ROOT / "backups"
 STAGING_PREFIX = "staging"
 BACKUP_PREFIX = "art-institut-backup"
-COMPOSE_DIR = Path("/home/art-institut")
-REPO_EXCLUDES = ['art-institut/backups', 'art-institut/node_modules', '*.pyc', '__pycache__']
+COMPOSE_DIR = REPO_ROOT
+REPO_EXCLUDES = [f'{PROJECT_NAME}/backups', f'{PROJECT_NAME}/node_modules', '*.pyc', '__pycache__']
 
 KIMAI_DB_CONTAINER = "art-institut-kimai-db"
 NEXTCLOUD_DB_CONTAINER = "art-institut-nextcloud-db"
@@ -130,7 +132,12 @@ def _dump_master_key(dest: Path) -> None:
 
 
 def _dump_repo(dest: Path) -> None:
-    exclude_args = [f'--exclude=art-institut/{pattern}' if not pattern.startswith('art-institut/') else f'--exclude={pattern}' for pattern in REPO_EXCLUDES]
+    exclude_args = []
+    for pattern in REPO_EXCLUDES:
+        if pattern.startswith(f"{PROJECT_NAME}/"):
+            exclude_args.append(f"--exclude={pattern}")
+        else:
+            exclude_args.append(f"--exclude={PROJECT_NAME}/{pattern}")
     cmd = ["tar", "--zstd", "-cf", str(dest), *exclude_args, "-C", str(COMPOSE_DIR.parent), COMPOSE_DIR.name]
     _run(cmd)
 

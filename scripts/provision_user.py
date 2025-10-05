@@ -34,7 +34,7 @@ except ImportError:
     NetcupMailClient = None  # type: ignore
     HAS_NETCUP = False
 
-BASE_DIR = Path("/home/art-institut")
+BASE_DIR = Path(__file__).resolve().parent.parent
 NEXTCLOUD_CONTAINER = "art-institut-nextcloud"
 KIMAI_CONTAINER = "art-institut-kimai"
 
