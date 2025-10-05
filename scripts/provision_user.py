@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 try:
-from netcup_mail import NetcupMailClient
+    from netcup_mail import NetcupMailClient
     HAS_NETCUP = True
 except ImportError:
     NetcupMailClient = None  # type: ignore
